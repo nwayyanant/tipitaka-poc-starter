@@ -1,0 +1,8 @@
+etl/
+├── __init__.py
+├── config.py          # Load .env and global settings
+├── data_loader.py     # Read and clean CSVs
+├── vectorizer.py      # Handle embeddings (Weaviate or local model)
+├── weaviate_client.py # Wraps weaviate connection + schema mgmt
+├── pipeline.py        # Orchestrates full ETL pipeline
+└── load_weaviate.py   # Entry point (runs pipeline)
