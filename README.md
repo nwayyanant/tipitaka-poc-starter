@@ -7,8 +7,8 @@ into (Postgres and) Weaviate with vector embeddings.
 
 1. Clone the repo:
 
-   git clone https://github.com/your-org/tipitaka-poc.git
-   cd tipitaka-poc
+   git clone https://github.com/nwayyanant/tipitaka-poc-starter.git
+   cd tipitaka-poc-starter
 
 	
 2. Copy environment file :
@@ -24,29 +24,30 @@ into (Postgres and) Weaviate with vector embeddings.
 
 
 
-5. Repo Structure 
+5. Repo Structure should be like: 
 weaviate-poc-starter/
 ├── docker-compose.yml
 ├── .env.example
 ├── Makefile
 ├── README.md
 ├── data/
-│ ├── chunk.csv # required (e.g., columns: chunk_id,pali_text,...)
-│ └── windows.csv # optional (e.g., columns: chunk_id,window_text,...)
+	│ ├── chunk.csv # required (e.g., columns: chunk_id,pali_text,...)
+	│ └── windows.csv # optional (e.g., columns: chunk_id,window_text,...)
 ├── etl/
-│ ├── Dockerfile
-│ ├── requirements.txt
-│ └── app/
-│ ├── pipeline.py
-│ ├── weaviate_schema.py
-│ ├── load_postgres.py
-│ ├── load_weaviate.py
-│ └── utils.py
+	│ ├── Dockerfile
+	│ ├── requirements.txt
+	│ └── app/
+	│ 	├── pipeline.py
+	│ 	├── weaviate_schema.py
+	│ 	├── load_postgres.py
+	│ 	├── load_weaviate.py
+	│ 	└── utils.py
 └── scripts/
-├── start.sh
-├── reseed.sh
-├── restart.sh
-├── stop.sh
-└── clean.sh
+	├── start.sh
+	├── reseed.sh
+	├── restart.sh
+	├── stop.sh
+	└── clean.sh
 
 Put your CSVs into data/ before running. Copy .env.example → .env and adjust if needed.
+
