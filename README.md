@@ -49,9 +49,9 @@ weaviate-poc-starter/
 	└── clean.sh
 
 
-modified version
 
-# Tipitaka PoC Search System
+
+# Tipitaka PoC Search System (modified version)
 
 This repository contains a prototype pipeline for importing Tipitaka data into Weaviate for semantic search.
 It includes Docker setup, Python ETL scripts, schema management, and optional embeddings.
@@ -181,4 +181,5 @@ Optional:
 ## ✅ Summary
 
 This setup ensures that any team member can spin up a local instance, reset schema, and ingest data with **one simple command**. It’s reproducible, modular, and ready for PoC or internal testing.
+
 
