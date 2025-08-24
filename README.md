@@ -11,17 +11,16 @@ into (Postgres and) Weaviate with vector embeddings.
    cd tipitaka-poc-starter
 
 	
-2. Copy environment file :
+2. Copy environment file : Copy .env.example → .env and adjust if needed.
 	cp .env.example .env
 	
 
-3. Add your data files under data/:
+3. Add your data files under data/: Put your CSVs into data/ before running. 
 	example: chunk.csv, windows.csv # these file can be manually download from google drive
 
 
 4. Start everything:
 	./scripts/start.sh
-
 
 
 5. Repo Structure should be like: 
@@ -49,5 +48,6 @@ weaviate-poc-starter/
 	├── stop.sh
 	└── clean.sh
 
-Put your CSVs into data/ before running. Copy .env.example → .env and adjust if needed.
+
+
 
