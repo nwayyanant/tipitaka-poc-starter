@@ -23,7 +23,8 @@ into (Postgres and) Weaviate with vector embeddings.
 	./scripts/start.sh
 
 
-5. Repo Structure should be like: 
+5. Repo Structure should be:
+```
 weaviate-poc-starter/
 ├── docker-compose.yml
 ├── .env.example
@@ -48,7 +49,7 @@ weaviate-poc-starter/
 	├── stop.sh
 	└── clean.sh
 
-
+```
 
 
 # Tipitaka PoC Search System (modified version)
@@ -181,5 +182,6 @@ Optional:
 ## ✅ Summary
 
 This setup ensures that any team member can spin up a local instance, reset schema, and ingest data with **one simple command**. It’s reproducible, modular, and ready for PoC or internal testing.
+
 
 
