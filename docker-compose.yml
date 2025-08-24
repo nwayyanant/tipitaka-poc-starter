@@ -1,0 +1,52 @@
+version: "3.9"
+
+services:
+  t2v:
+    image: semitechnologies/transformers-inference:cpu
+    restart: unless-stopped
+    environment:
+      # Pick your model via .env → HF_MODEL_NAME=...
+      MODEL_NAME: ${HF_MODEL_NAME:-sentence-transformers/LaBSE}
+      # No external port needed; Weaviate talks to it over the network
+
+  weaviate:
+    image: semitechnologies/weaviate:1.25.6
+    restart: unless-stopped
+    ports:
+      - "8080:8080"
+    environment:
+      QUERY_DEFAULTS_LIMIT: "25"
+      AUTHENTICATION_ANONYMOUS_ACCESS_ENABLED: "true"
+      PERSISTENCE_DATA_PATH: "/var/lib/weaviate"
+      DEFAULT_VECTORIZER_MODULE: "text2vec-transformers"
+      ENABLE_MODULES: "text2vec-transformers"
+      TRANSFORMERS_INFERENCE_API: "http://t2v:8080"
+      CLUSTER_HOSTNAME: "node1"
+    volumes:
+      - weavdata:/var/lib/weaviate
+    depends_on:
+      t2v:
+        condition: service_started
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/v1/.well-known/ready"]
+      interval: 5s
+      timeout: 3s
+      retries: 40
+
+  etl:
+    # This container auto-runs once on `up` and then exits.
+    build:
+      context: ./etl
+      dockerfile: Dockerfile
+    env_file: .env
+    volumes:
+      - ./data:/app/data
+      - ./etl:/app
+    depends_on:
+      weaviate:
+        condition: service_healthy
+    command: ["python", "-m", "app.pipeline"]
+    restart: "no"
+
+volumes:
+  weavdata: {}
