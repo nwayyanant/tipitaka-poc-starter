@@ -1,24 +1,26 @@
-# Use official Python base image
+# Step 1: Choose a lightweight Python base
 FROM python:3.11-slim
 
-# Set working directory
+# Step 2: Set working directory inside the container
 WORKDIR /app
 
-# Install system deps (for numpy, pandas, etc.)
-RUN apt-get update && apt-get install -y \
+# Step 3: Install system dependencies (optional, for psycopg2, etc.)
+RUN apt-get update && apt-get install -y --no-install-recommends \
     build-essential \
-    git \
     curl \
     && rm -rf /var/lib/apt/lists/*
 
-# Copy dependency list and install
-COPY requirements.txt .
+# Step 4: Copy requirements first (better layer caching)
+COPY etl/requirements.txt /app/requirements.txt
+
+# Step 5: Install Python dependencies
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Copy ETL scripts into image
+# Step 6: Copy your code (scripts will be mounted by docker-compose too)
 COPY etl/ /app/etl
+COPY data/ /app/data
 COPY .env /app/.env
 
-# Default entrypoint for ETL
-command: ["python", "-m", "etl.pipeline"]
+# Step 7: Default command (can be overridden in docker-compose) //Default entrypoint for ETL
+CMD ["python", "etl/load_weaviate.py"]
 
