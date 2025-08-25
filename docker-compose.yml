@@ -48,5 +48,21 @@ services:
     command: ["python", "-m", "app.pipeline"]
     restart: "no"
 
+  postgres:
+    image: postgres:15
+    container_name: tipitaka_postgres
+    restart: always
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
+      POSTGRES_DB: ${POSTGRES_DB:-tipitaka}
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      - ./postgres/init:/docker-entrypoint-initdb.d
+
+
 volumes:
   weavdata: {}
+  pgdata:
