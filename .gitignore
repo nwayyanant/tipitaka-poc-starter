@@ -1,0 +1,53 @@
+# -------------------------------
+# Python
+# -------------------------------
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.so
+*.egg
+*.egg-info/
+.eggs/
+dist/
+build/
+pip-wheel-metadata/
+*.log
+
+# Virtual environments
+.env
+.venv
+venv/
+ENV/
+
+# Jupyter Notebook checkpoints
+.ipynb_checkpoints
+
+# -------------------------------
+# Project-specific
+# -------------------------------
+# Real environment variables file
+.env
+
+# Data files (raw or intermediate)
+data/*.csv
+data/*.json
+data/*.parquet
+data/*.db
+
+# Ignore large exports if any
+exports/
+backups/
+
+# -------------------------------
+# Docker
+# -------------------------------
+# Local volumes
+volumes/
+*.pid
+
+# -------------------------------
+# OS-specific
+# -------------------------------
+.DS_Store
+Thumbs.db
