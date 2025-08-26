@@ -34,7 +34,7 @@ weaviate-poc-starter/
 	│ ├── chunk.csv # required (e.g., columns: chunk_id,pali_text,...)
 	│ └── windows.csv # optional (e.g., columns: chunk_id,window_text,...)
 ├── etl/
-	│ ├── Dockerfile
+	│ ├── Dockerfile     # sets up Python + dependencies for your ETL.
 	│ ├── requirements.txt
 	│ └── app/
 	│ 	├── pipeline.py
@@ -182,6 +182,7 @@ Optional:
 ## ✅ Summary
 
 This setup ensures that any team member can spin up a local instance, reset schema, and ingest data with **one simple command**. It’s reproducible, modular, and ready for PoC or internal testing.
+
 
 
 
