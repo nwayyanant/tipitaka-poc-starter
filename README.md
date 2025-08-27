@@ -6,13 +6,16 @@ into (Postgres and) Weaviate with vector embeddings.
 ## Quick Start
 
 1. Clone the repo:
-
+   ```bash
    git clone https://github.com/nwayyanant/tipitaka-poc-starter.git
    cd tipitaka-poc-starter
+   ```
 
 	
 2. Copy environment file : Copy .env.example → .env and adjust if needed.
-	cp .env.example .env
+	```bash
+ 	cp .env.example .env
+    ```
 	
 
 3. Add your data files under data/: Put your CSVs into data/ before running. 
@@ -20,10 +23,12 @@ into (Postgres and) Weaviate with vector embeddings.
 
 
 4. Start everything:
+   ```bash
 	./scripts/start.sh
+   ```
 
 
-5. Repo Structure should be:
+6. Repo Structure should be:
 ```
 weaviate-poc-starter/
 ├── docker-compose.yml
@@ -182,6 +187,7 @@ Optional:
 ## ✅ Summary
 
 This setup ensures that any team member can spin up a local instance, reset schema, and ingest data with **one simple command**. It’s reproducible, modular, and ready for PoC or internal testing.
+
 
 
 
