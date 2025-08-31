@@ -5,6 +5,7 @@ This repository contains a proof-of-concept pipeline for importing Tipitaka Pali
 into (Postgres and) Weaviate with vector embeddings.
 
 # Improved Architecture 
+```bash
 +---------------------+       +----------------------+
 |   Search Service    |       | Embedding Service(s) |
 |  (CLI/API/Module)   | <---> |  FastAPI + LaBSE     |
@@ -16,7 +17,7 @@ into (Postgres and) Weaviate with vector embeddings.
      |   Weaviate DB     |-------------+
      +-------------------+
 
-
+```
 ## Quick Start
 
 1. Clone the repo:
@@ -201,6 +202,7 @@ Optional:
 ## ✅ Summary
 
 This setup ensures that any team member can spin up a local instance, reset schema, and ingest data with **one simple command**. It’s reproducible, modular, and ready for PoC or internal testing.
+
 
 
 
