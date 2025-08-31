@@ -1,7 +1,21 @@
+
 # Tipitaka Semantic Search PoC
 
 This repository contains a proof-of-concept pipeline for importing Tipitaka Pali texts 
 into (Postgres and) Weaviate with vector embeddings.
+
+# Improved Architecture 
++---------------------+       +----------------------+
+|   Search Service    |       | Embedding Service(s) |
+|  (CLI/API/Module)   | <---> |  FastAPI + LaBSE     |
+|                     |       |  FP16/ONNX optimized |
++---------------------+       +----------------------+
+          |                            ^
+          v                            |
+     +-------------------+             |
+     |   Weaviate DB     |-------------+
+     +-------------------+
+
 
 ## Quick Start
 
@@ -187,6 +201,7 @@ Optional:
 ## ✅ Summary
 
 This setup ensures that any team member can spin up a local instance, reset schema, and ingest data with **one simple command**. It’s reproducible, modular, and ready for PoC or internal testing.
+
 
 
 
