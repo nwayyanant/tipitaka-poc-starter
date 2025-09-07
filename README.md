@@ -17,7 +17,7 @@ Start Git Bash to run following steps
    ```
 
 
-2. **Get latest source**
+2. **Get latest source** (if needed)
 	```bash
 	./get_latest.sh
 	```
@@ -82,4 +82,5 @@ Start Git Bash to run following steps
 	docker compose run --rm etl python etl/app/search_and_save.py --collection Sentence --mode vector --query "mettā" --k 10
 	```
 	
+
 
