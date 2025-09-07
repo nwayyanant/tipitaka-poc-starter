@@ -1,0 +1,10 @@
+# etl/requirements.txt
+weaviate-client
+numpy
+pandas
+tqdm
+sentence-transformers
+sentencepiece
+gdown
+
+
