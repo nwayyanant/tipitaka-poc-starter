@@ -57,21 +57,26 @@ Start Git Bash to run following steps
 	```
 
 
-8. **Check Container Status**
+8. **Check Container Status** (optional)
 	```bash
 	docker compose ps
 	```
 
-9. **Check data in Weaviate**
+9. **Check data in Weaviate** (optional)
 	```bash 
 	curl -s -X POST http://localhost:8081/v1/graphql -H "Content-Type: application/json" -d "{\"query\":\"{ Aggregate { Chunk { meta { count } } } }\"}"
 	```
 	
-10. **Search Data and export to CSV** 
+10. **Search Data and output result to CSV** 
 
-	usage: search_and_save.py --collection {Window, Sentence, Subchunk, Chunk}
-                          [--mode {bm25,hybrid,vector}] --query QUERY [--k K]
-                          [--alpha ALPHA] 
+	usage: search_and_save.py
+			--collection {Window, Sentence, Subchunk, Chunk}
+    		[--mode {bm25,hybrid,vector}]
+    		--query QUERY
+    		[--k K]
+    		[--alpha ALPHA]
+
+    
 	example #1
     ```bash
 	docker compose run --rm etl python etl/app/search_and_save.py --collection Window --mode hybrid --alpha 0.5 --query "mettā" --k 5
@@ -82,5 +87,6 @@ Start Git Bash to run following steps
 	docker compose run --rm etl python etl/app/search_and_save.py --collection Sentence --mode vector --query "mettā" --k 10
 	```
 	
+
 
 
