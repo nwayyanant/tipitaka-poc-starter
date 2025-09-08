@@ -31,12 +31,12 @@ Start Git Bash to run following steps
 	./bootstrap.sh setup
 	```
 
-5. **Build ETL container** (if needed)
+5. **Build ETL container** (not required if bootstrap.sh setup is successful)
 	```bash
 	./bootstrap.sh build
 	```
 
-6. **Run ETL pipeline**
+6. **Run ETL pipeline** (not required if bootstrap.sh setup is successful)
 
    ```bash
    ./bootstrap.sh load
@@ -86,6 +86,7 @@ Start Git Bash to run following steps
 	docker compose run --rm etl python etl/app/search_and_save.py --collection Sentence --mode vector --query "mettā" --k 10
 	```
 	
+
 
 
 
