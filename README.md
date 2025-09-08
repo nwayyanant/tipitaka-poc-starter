@@ -13,7 +13,6 @@ Start Git Bash to run following steps
 1. **Clone the repo:**
    ```bash
    git clone https://github.com/nwayyanant/tipitaka-poc-starter.git
-   cd tipitaka-poc-starter
    ```
 
 
@@ -87,6 +86,7 @@ Start Git Bash to run following steps
 	docker compose run --rm etl python etl/app/search_and_save.py --collection Sentence --mode vector --query "mettā" --k 10
 	```
 	
+
 
 
 
