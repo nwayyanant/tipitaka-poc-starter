@@ -57,12 +57,12 @@ Start Git Bash to run following steps
 	```
 
 
-8. **Check Container Status **
+8. **Check Container Status**
 	```bash
 	docker compose ps
 	```
 
-9. **check data inside chunk **
+9. **check data inside chunk**
 	```bash 
 	curl -s -X POST http://localhost:8081/v1/graphql -H "Content-Type: application/json" -d "{\"query\":\"{ Aggregate { Chunk { meta { count } } } }\"}"
 	```
@@ -87,3 +87,4 @@ Start Git Bash to run following steps
 	docker compose run --rm etl python etl/app/search_and_save.py --collection Sentence --mode vector --query "mettā" --k 10
 	```
 	
+
