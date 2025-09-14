@@ -13,10 +13,11 @@ Start Git Bash to run following steps
 1. **Clone the repo:**
    ```bash
    git clone https://github.com/nwayyanant/tipitaka-poc-starter.git
+   cd tipitaka-poc-starter
    ```
 
 
-2. **Get latest source** (if needed)
+2. **Get latest source**
 	```bash
 	./get_latest.sh
 	```
@@ -45,8 +46,8 @@ Start Git Bash to run following steps
    This will:
 
    * Create/reset schema in Weaviate
-   * Load CSVs
-   * Vectorize 
+   * Load chunk.csv and windows.csv
+   * Vectorize text (using Weaviate module or local model)
    * Ingest data into Weaviate
 
 
@@ -56,26 +57,21 @@ Start Git Bash to run following steps
 	```
 
 
-8. **Check Container Status** (optional)
+8. **Check Container Status **
 	```bash
 	docker compose ps
 	```
 
-9. **Check data in Weaviate** (optional)
+9. **check data inside chunk **
 	```bash 
 	curl -s -X POST http://localhost:8081/v1/graphql -H "Content-Type: application/json" -d "{\"query\":\"{ Aggregate { Chunk { meta { count } } } }\"}"
 	```
 	
-10. **Search Data and output result to CSV** 
+10. **Search Data and export to CSV** 
 
-	usage: search_and_save.py
-			--collection {Window, Sentence, Subchunk, Chunk}
-    		[--mode {bm25,hybrid,vector}]
-    		--query QUERY
-    		[--k K]
-    		[--alpha ALPHA]
-
-    
+	usage: search_and_save.py --collection {Window, Sentence, Subchunk, Chunk}
+                          [--mode {bm25,hybrid,vector}] --query QUERY [--k K]
+                          [--alpha ALPHA] 
 	example #1
     ```bash
 	docker compose run --rm etl python etl/app/search_and_save.py --collection Window --mode hybrid --alpha 0.5 --query "mettā" --k 5
@@ -86,7 +82,7 @@ Start Git Bash to run following steps
 	docker compose run --rm etl python etl/app/search_and_save.py --collection Sentence --mode vector --query "mettā" --k 10
 	```
 	
-
-
-
-
+11. Simple Search 
+	```bash
+	docker compose run --rm etl python etl/app/search_weaviate_labse_hybrid_refactored.py --collection Window --mode hybrid --alpha 0.5 --query "mettā" --k 5
+	```
