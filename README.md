@@ -57,17 +57,22 @@ Start Git Bash to run following steps
 	```
 
 
-8. **Check Container Status **
+8. **Check Container Status**
 	```bash
 	docker compose ps
 	```
 
-9. **check data inside chunk **
+9. **check data inside chunk**
 	```bash 
 	curl -s -X POST http://localhost:8081/v1/graphql -H "Content-Type: application/json" -d "{\"query\":\"{ Aggregate { Chunk { meta { count } } } }\"}"
 	```
 	
-10. **Search Data and export to CSV** 
+10. **Simple Search ** 
+	```bash
+	docker compose run --rm etl python etl/app/search_weaviate_labse_hybrid_refactored.py --collection Window --mode hybrid --alpha 0.5 --query "mettā" --k 5
+	```
+ 
+ 11. **Search Data and export to CSV** 
 
 	usage: search_and_save.py --collection {Window, Sentence, Subchunk, Chunk}
                           [--mode {bm25,hybrid,vector}] --query QUERY [--k K]
@@ -82,7 +87,4 @@ Start Git Bash to run following steps
 	docker compose run --rm etl python etl/app/search_and_save.py --collection Sentence --mode vector --query "mettā" --k 10
 	```
 	
-11. Simple Search 
-	```bash
-	docker compose run --rm etl python etl/app/search_weaviate_labse_hybrid_refactored.py --collection Window --mode hybrid --alpha 0.5 --query "mettā" --k 5
-	```
+
