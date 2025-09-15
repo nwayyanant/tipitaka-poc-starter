@@ -3,6 +3,8 @@ weaviate-client
 numpy
 pandas
 tqdm
+fastapi
+uvicorn[standard]
 sentence-transformers
 sentencepiece
 gdown

@@ -16,6 +16,12 @@ COPY etl/requirements.txt ./requirements.txt
 # Step 5: Install Python dependencies
 RUN pip install --no-cache-dir -r requirements.txt
 
+# Expose port
+EXPOSE 8001
+
+# Run FastAPI app with Uvicorn
+CMD ["uvicorn", "embedding_service:app", "--host", "0.0.0.0", "--port", "8001"]
+
 # --------- PROD MODE ONLY (ignored in dev if you use volumes) ---------
 # Copy all your ETL code and data into the image
 # COPY etl/ /workspace/etl
