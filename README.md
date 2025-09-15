@@ -74,17 +74,31 @@ Start Git Bash to run following steps
  
  11. **Search Data and export to CSV** 
 
-	usage: search_and_save.py --collection {Window, Sentence, Subchunk, Chunk}
+	usage: search_weaviate_labse.py --collection {Window, Sentence, Subchunk, Chunk}
                           [--mode {bm25,hybrid,vector}] --query QUERY [--k K]
                           [--alpha ALPHA] 
+						  
+
+	# BM25 only
+	```bash
+	python search_weaviate_labse.py --query "anicca" --mode bm25
+
+	# Pure vector
+	python search_weaviate_labse.py --query "anicca" --mode vector
+
+	# Hybrid (50/50 mix)
+	python search_weaviate_labse.py --query "anicca" --mode hybrid --alpha 0.5
+	```
+						  
+	
 	example #1
     ```bash
-	docker compose run --rm etl python etl/app/search_and_save.py --collection Window --mode hybrid --alpha 0.5 --query "mettā" --k 5
+	docker compose run --rm etl python etl/app/ssearch_weaviate_labse.py --collection Sentence --mode hybrid --query "four noble truths" --k 5
 	```
 	
 	example #2
     ```bash
-	docker compose run --rm etl python etl/app/search_and_save.py --collection Sentence --mode vector --query "mettā" --k 10
+	docker compose run --rm etl python etl/app/ssearch_weaviate_labse.py --collection Window --mode vector --query "mettā" --k 10
 	```
 	
 

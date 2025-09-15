@@ -8,6 +8,9 @@ from datetime import datetime
 
 from weaviate import WeaviateClient
 from weaviate.connect import ConnectionParams
+import requests
+
+EMBEDDING_SERVICE_URL = os.getenv("EMBEDDING_SERVICE_URL", "http://localhost:8001/embed")
 
 DEFAULT_MODEL = os.getenv("MODEL_NAME", "sentence-transformers/LaBSE")
 LABSE_DEVICE = os.getenv("LABSE_DEVICE")  # 'cpu' | 'cuda' | 'mps' | None
@@ -74,36 +77,25 @@ def get_client(url: str, grpc_port: int) -> WeaviateClient:
     return client
 
 
-def _load_model(model_name: str):
-    global _model
-    if _model is not None:
-        return _model
+
+
+def encode_query_remote(text: str) -> np.ndarray:
+    """
+    Send text to embedding service and get back a vector.
+    """
     try:
-        from sentence_transformers import SentenceTransformer
-        try:
-            import torch
-            if LABSE_DEVICE:
-                device = LABSE_DEVICE
-            else:
-                device = "cuda" if torch.cuda.is_available() else (
-                    "mps" if getattr(torch.backends, "mps", None) and torch.backends.mps.is_available() else "cpu"
-                )
-        except Exception:
-            device = LABSE_DEVICE or "cpu"
-        _model = SentenceTransformer(model_name, device=device)
-        return _model
-    except ModuleNotFoundError as e:
-        raise SystemExit(
-            "ERROR: sentence-transformers not found in this environment.\n"
-            "Inside Docker, ensure your Dockerfile runs: pip install -r requirements.txt"
-        ) from e
-
-
-def encode_query_labse(text: str, model_name: str) -> np.ndarray:
-    model = _load_model(model_name)
-    vec = model.encode([text], normalize_embeddings=False, convert_to_numpy=True)
-    return vec.astype(np.float32)[0]
-
+        resp = requests.post(
+            EMBEDDING_SERVICE_URL,
+            json={"text": text},
+            timeout=10
+        )
+        resp.raise_for_status()
+        data = resp.json()
+        vec = np.array(data["vector"], dtype=np.float32)
+        return vec
+    except Exception as e:
+        raise SystemExit(f"❌ Embedding service failed: {e}")
+        
 
 def pick_return_props(coll_name: str) -> List[str]:
     if coll_name == "Window":
@@ -185,14 +177,14 @@ def main():
         props = pick_return_props(args.collection)
 
         if args.mode == "vector":
-            qvec = encode_query_labse(args.query, args.model)
+            qvec = encode_query_remote(args.query)
             res = coll.query.near_vector(
                 near_vector=qvec,
                 limit=args.k,
                 return_properties=props,
             )
         elif args.mode == "hybrid":
-            qvec = encode_query_labse(args.query, args.model)
+            qvec = encode_query_remote(args.query)
             res = coll.query.hybrid(
                 query=args.query,
                 vector=qvec,
@@ -210,7 +202,7 @@ def main():
         print(f"[results] {len(res.objects)} objects")
         
         # Save results to CSV
-        csv_file = save_to_csv(res, args.collection, args.query, args.mode, args.alpha)
+        # csv_file = save_to_csv(res, args.collection, args.query, args.mode, args.alpha)
         
         # Print results to console
         for i, o in enumerate(res.objects or [], start=1):
