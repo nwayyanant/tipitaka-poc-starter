@@ -9,7 +9,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 
 # Copy only requirements
 COPY etl/requirements.txt ./requirements.txt
-RUN pip install --no-cache-dir -r requirements.txt
+RUN pip install --timeout=120 --no-cache-dir -r requirements.txt
 
 # Default CMD for dev
 CMD ["python", "etl/app/pipeline.py"]

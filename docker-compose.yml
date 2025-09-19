@@ -33,22 +33,23 @@ services:
       DOWNLOAD_OUTPUTS: "${DOWNLOAD_OUTPUTS:-0}"
       GOOGLE_DRIVE_FOLDER_ID: "${GOOGLE_DRIVE_FOLDER_ID:-}"
       WAIT_MAX_SEC: "${WAIT_MAX_SEC:-900}"
-    volumes:    # DEV MODE mounts
+    volumes:
+      # DEV MODE mounts
       - ./data:/workspace/data
       - ./etl/app:/workspace/etl/app
       - ./weaviate-results:/app/weaviate-result
     command: python etl/app/pipeline.py
-    
+
   embedding-service:
     build:
-      context: ./etl/app
+      context: ./etl
       dockerfile: Dockerfile.embedding
     restart: unless-stopped
     ports:
       - "${EMBEDDING_HOST_PORT:-8001}:8001"
     environment:
       MODEL_NAME: sentence-transformers/LaBSE
-      LABSE_DEVICE: cuda   # or "cpu" if no GPU
+      LABSE_DEVICE: cuda # or "cpu" if no GPU
     volumes:
       - ./etl/app:/app
     command: uvicorn embedding_service:app --host 0.0.0.0 --port 8001 --workers 1

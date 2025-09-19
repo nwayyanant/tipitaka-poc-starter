@@ -10,8 +10,11 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 COPY requirements.txt /app/
 RUN pip install --no-cache-dir -r requirements.txt
 
+# ✅ ADD THIS (pre-download LaBSE)
+RUN python -c "from sentence_transformers import SentenceTransformer as S; S('sentence-transformers/LaBSE')"
+
 # Copy service code
-COPY embedding_service.py /app/
+COPY app/embedding_service.py /app/
 
 # Default command (can be overridden by docker-compose)
 CMD ["uvicorn", "embedding_service:app", "--host", "0.0.0.0", "--port", "8001", "--workers", "1"]
