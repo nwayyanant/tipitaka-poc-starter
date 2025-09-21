@@ -53,23 +53,23 @@ Start Git Bash to run following steps
 	
 	1. **example #1** 
  
-	```bash
+	
 	 python /workspace/etl/app/search_weaviate_labse_hybridfix.py --url http://weaviate:8080 --grpc-port 50051 --collection Window --mode hybrid --query mettā --k 5 --alpha 0.5
-	```
+	
 	
 	2. example #2 using search service - command line
  
-	```bash
+	
 	docker compose run --rm search python cli.py --collection Window --mode hybrid --query "mettā" --k 10
-	```
 	
-	```bash
+	
+	
 	docker compose run --rm search python cli.py --collection Window --mode hybrid --query "puttā" --k 10
-	```
 	
-	```bash
+	
+	
 	docker compose run --rm search python cli.py --collection Window --mode hybrid --query "bhagavā" --k 10
-	```
+	
 	 
  
 	
@@ -96,3 +96,4 @@ Start Git Bash to run following steps
 	./bootstrap.sh up --prod
 
 	→ runs with prod file → optimized containers.
+
