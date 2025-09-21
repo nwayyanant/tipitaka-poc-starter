@@ -148,7 +148,7 @@ def insert_csv(client: WeaviateClient, collection: str, csv_path: str):
                     print(f"[i] {collection}: {total} inserted...")
     print(f"[✓] {collection}: {total} inserted from {csv_path}")
 
-    def ingest_all(client: WeaviateClient, outdir: str):
+def ingest_all(client: WeaviateClient, outdir: str):
     # Window
     win_enriched = os.path.join(outdir, "windows_with_headings.csv")
     win_base = os.path.join(outdir, "windows_2_3.csv")

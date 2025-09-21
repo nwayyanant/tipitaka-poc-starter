@@ -9,7 +9,7 @@ WEAVIATE_URL  = os.getenv("WEAVIATE_URL", "http://weaviate:8080")
 WEAVIATE_GRPC = int(os.getenv("WEAVIATE_GRPC_PORT", "50051"))
 DATA_DIR      = Path(os.getenv("DATA_DIR", "/workspace/data"))
 OUTPUTS_DIR   = Path(os.getenv("OUTPUTS_DIR", str(DATA_DIR / "outputs")))
-WAIT_MAX_SEC  = int(os.getenv("WAIT_MAX_SEC", "600"))  # 10min default
+WAIT_MAX_SEC  = int(os.getenv("WAIT_MAX_SEC", "60"))  # 10min default
 
 APP_DIR = Path(__file__).resolve().parent
 

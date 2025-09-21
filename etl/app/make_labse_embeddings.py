@@ -5,9 +5,33 @@ import os
 import sys
 from typing import List, Tuple
 
+import requests
 import numpy as np
-import torch
-from sentence_transformers import SentenceTransformer
+import tqdm  # optional, for progress bar
+
+EMBEDDING_URL = os.getenv("EMBEDDING_SERVICE_URL", "http://embedding:8000/embed-many")
+
+def embed_batch(texts, batch_size=32, normalize=True):
+    """
+    Send a batch of texts to the embedding service.
+    """
+    vectors = []
+    for i in tqdm.trange(0, len(texts), batch_size, desc="Embedding"):
+        batch = texts[i:i+batch_size]
+        resp = requests.post(
+            EMBEDDING_URL,
+            json={"texts": batch},  # <-- we'll extend embedding service to support lists
+            timeout=60
+        )
+        resp.raise_for_status()
+        vecs = np.array(resp.json()["vectors"], dtype=np.float32)
+        if normalize:
+            # L2 normalize
+            norms = np.linalg.norm(vecs, axis=1, keepdims=True) + 1e-10
+            vecs = vecs / norms
+        vectors.append(vecs)
+    return np.vstack(vectors)
+
 
 def read_pairs(csv_path: str, text_col: str, id_col: str) -> Tuple[List[str], List[str]]:
     rows = []
@@ -35,23 +59,17 @@ def main():
     ap.add_argument("--batch-size", type=int, default=64, help="Batch size (default: 64)")
     args = ap.parse_args()
 
-    device = 'cuda' if torch.cuda.is_available() else 'cpu'
-    print(f"[i] Loading LaBSE on {device} ...")
-    model = SentenceTransformer('sentence-transformers/LaBSE', device=device)
-
     ids, texts = read_pairs(args.input, args.text_col, args.id_col)
     if not ids:
         print("[!] No rows with both id and text. Nothing to embed.")
         sys.exit(0)
 
     print(f"[i] Encoding {len(texts)} rows ...")
-    vecs = model.encode(
+    vecs = embed_batch(
         texts,
         batch_size=args.batch_size,
-        convert_to_numpy=True,
-        normalize_embeddings=True,  # L2-normalize
-        show_progress_bar=True
-    ).astype('float32')
+        normalize=True
+        )
 
     os.makedirs(os.path.dirname(os.path.abspath(args.out_npy)), exist_ok=True)
     np.save(args.out_npy, vecs)

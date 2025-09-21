@@ -1,12 +1,5 @@
-# etl/requirements.txt
-weaviate-client
-numpy
-pandas
-tqdm
-fastapi
-uvicorn[standard]
-sentence-transformers
-sentencepiece
-gdown
-
-
+numpy==2.3.3
+pandas==2.3.2
+Requests==2.32.5
+tqdm==4.67.1
+weaviate_client==4.16.9

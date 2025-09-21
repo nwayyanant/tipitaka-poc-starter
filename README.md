@@ -22,83 +22,66 @@ Start Git Bash to run following steps
 	./get_latest.sh
 	```
 
-3. **Reset Docker** (if needed)
+3. **Reset Docker** (To start from fresh)
 	```bash
 	./docker_reset.sh
 	```
 
-4. **Start Weaviate container**
+4. **Environment Setup**
 	```bash
 	./bootstrap.sh setup
 	```
 
-5. **Build ETL container** (if needed)
+
+5. **Check Weaviate Schema** (Optional, it should return json. If it hangs or fails → service might not be ready or ports are misconfigured.)
 	```bash
-	./bootstrap.sh build
-	```
-
-6. **Run ETL pipeline**
-
-   ```bash
-   ./bootstrap.sh load
-   ```
-
-   This will:
-
-   * Create/reset schema in Weaviate
-   * Load chunk.csv and windows.csv
-   * Vectorize text (using Weaviate module or local model)
-   * Ingest data into Weaviate
-
-
-7. **Check Weaviate Schema** (it should return json. If it hangs or fails → service might not be ready or ports are misconfigured.)
-	```bash
-	curl -s http://localhost:8081/v1/schema
+	curl -s http://localhost:8090/v1/schema
 	```
 
 
-8. **Check Container Status**
+6. **Check Container Status** (Optional)
 	```bash
 	docker compose ps
 	```
 
-9. **check data inside chunk**
+7. **check data inside chunk** (Not required, only if you interested)
 	```bash 
-	curl -s -X POST http://localhost:8081/v1/graphql -H "Content-Type: application/json" -d "{\"query\":\"{ Aggregate { Chunk { meta { count } } } }\"}"
+	curl -s -X POST http://localhost:8090/v1/graphql -H "Content-Type: application/json" -d "{\"query\":\"{ Aggregate { Chunk { meta { count } } } }\"}"
 	```
 	
-10. **Simple Search ** 
-	```bash
-	docker compose run --rm etl python etl/app/search_weaviate_labse_hybrid_refactored.py --collection Window --mode hybrid --alpha 0.5 --query "mettā" --k 5
-	```
- 
- 11. **Search Data and export to CSV** 
-
-	usage: search_weaviate_labse.py --collection {Window, Sentence, Subchunk, Chunk}
-                          [--mode {bm25,hybrid,vector}] --query QUERY [--k K]
-                          [--alpha ALPHA] 
-						  
-
-	# BM25 only
-	```bash
-	python search_weaviate_labse.py --query "anicca" --mode bm25
-
-	# Pure vector
-	python search_weaviate_labse.py --query "anicca" --mode vector
-
-	# Hybrid (50/50 mix)
-	python search_weaviate_labse.py --query "anicca" --mode hybrid --alpha 0.5
-	```
-						  
+8. **Simple Search ** (Test)
 	
 	example #1
-    ```bash
-	docker compose run --rm etl python etl/app/ssearch_weaviate_labse.py --collection Sentence --mode hybrid --query "four noble truths" --k 5
+	```bash
+	 python /workspace/etl/app/search_weaviate_labse_hybridfix.py --url http://weaviate:8080 --grpc-port 50051 --collection Window --mode hybrid --query mettā --k 5 --alpha 0.5
 	```
 	
-	example #2
-    ```bash
-	docker compose run --rm etl python etl/app/ssearch_weaviate_labse.py --collection Window --mode vector --query "mettā" --k 10
+	example #2 using search service - command line
+	```bash
+	docker compose run --rm search python cli.py --collection Window --mode hybrid --query "mettā" --k 10
 	```
+	 
+ 
 	
 
+##Change Log **20250922**
+	
+	Separation of concerns → embedding, search, ETL are independent.
+	Scalable → can run multiple embedding replicas if queries grow.
+	Slim images → only embedding has LaBSE baked in, search stays lightweight.
+	Data persistence → Weaviate uses a named volume.
+	Prod ready → Gunicorn workers auto-scale based on CPU cores.
+	
+	
+	
+## bootstrap.sh Usage Examples
+
+	Dev mode (default)
+
+	./bootstrap.sh up
+	→ runs with override → hot reload.
+
+	Prod mode
+
+	./bootstrap.sh up --prod
+	→ runs with prod file → optimized containers.

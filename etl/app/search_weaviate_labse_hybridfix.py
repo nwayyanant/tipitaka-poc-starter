@@ -1,16 +1,14 @@
-# search_weaviate_labse_hybridfix.py
 import argparse
 import os
 from typing import List
 import numpy as np
+import requests
 
 from weaviate import WeaviateClient
 from weaviate.connect import ConnectionParams
 
-DEFAULT_MODEL = os.getenv("MODEL_NAME", "sentence-transformers/LaBSE")
-LABSE_DEVICE = os.getenv("LABSE_DEVICE")  # 'cpu' | 'cuda' | 'mps' | None
-
-_model = None  # lazy singleton
+# Config
+EMBEDDING_URL = os.getenv("EMBEDDING_SERVICE_URL", "http://localhost:8000/embed-many")
 
 
 def parse_args():
@@ -18,14 +16,14 @@ def parse_args():
 
     parser.add_argument(
         "--url",
-        default=os.getenv("WEAVIATE_URL", "http://localhost:8081"),
-        help="Weaviate REST URL (default: from WEAVIATE_URL env or localhost:8081)"
+        default=os.getenv("WEAVIATE_URL", "http://localhost:8090"),
+        help="Weaviate REST URL (default: from WEAVIATE_URL env or localhost:8090)"
     )
     parser.add_argument(
         "--grpc-port",
         type=int,
-        default=int(os.getenv("WEAVIATE_GRPC_PORT", 50052)),
-        help="Weaviate gRPC port (default: from WEAVIATE_GRPC_PORT env or 50052)"
+        default=int(os.getenv("WEAVIATE_GRPC_PORT", 50051)),
+        help="Weaviate gRPC port (default: from WEAVIATE_GRPC_PORT env or 50051)"
     )
     parser.add_argument(
         "--collection",
@@ -56,10 +54,10 @@ def parse_args():
         help="hybrid alpha (0..1) higher favors vector"
     )
     parser.add_argument(
-    "--model",
-    type=str,
-    default="sentence-transformers/LaBSE",
-    help="Embedding model to use for vector search"
+        "--model",
+        type=str,
+        default="sentence-transformers/LaBSE",
+        help="Embedding model to use for vector search (kept for compatibility)"
     )
 
     return parser.parse_args()
@@ -72,35 +70,21 @@ def get_client(url: str, grpc_port: int) -> WeaviateClient:
     return client
 
 
-def _load_model(model_name: str):
-    global _model
-    if _model is not None:
-        return _model
+def encode_query_remote(text: str) -> np.ndarray:
+    """
+    Send query to embedding service (/embed-many with a single text).
+    """
     try:
-        from sentence_transformers import SentenceTransformer
-        try:
-            import torch
-            if LABSE_DEVICE:
-                device = LABSE_DEVICE
-            else:
-                device = "cuda" if torch.cuda.is_available() else (
-                    "mps" if getattr(torch.backends, "mps", None) and torch.backends.mps.is_available() else "cpu"
-                )
-        except Exception:
-            device = LABSE_DEVICE or "cpu"
-        _model = SentenceTransformer(model_name, device=device)
-        return _model
-    except ModuleNotFoundError as e:
-        raise SystemExit(
-            "ERROR: sentence-transformers not found in this environment.\n"
-            "Inside Docker, ensure your Dockerfile runs: pip install -r requirements.txt"
-        ) from e
-
-
-def encode_query_labse(text: str, model_name: str) -> np.ndarray:
-    model = _load_model(model_name)
-    vec = model.encode([text], normalize_embeddings=False, convert_to_numpy=True)
-    return vec.astype(np.float32)[0]
+        resp = requests.post(
+            EMBEDDING_URL,
+            json={"texts": [text]},
+            timeout=15
+        )
+        resp.raise_for_status()
+        vecs = np.array(resp.json()["vectors"], dtype=np.float32)
+        return vecs[0]  # single vector
+    except Exception as e:
+        raise SystemExit(f"❌ Embedding service failed: {e}")
 
 
 def pick_return_props(coll_name: str) -> List[str]:
@@ -131,14 +115,14 @@ def main():
         props = pick_return_props(args.collection)
 
         if args.mode == "vector":
-            qvec = encode_query_labse(args.query, args.model)
+            qvec = encode_query_remote(args.query)
             res = coll.query.near_vector(
                 near_vector=qvec,
                 limit=args.k,
                 return_properties=props,
             )
         elif args.mode == "hybrid":
-            qvec = encode_query_labse(args.query, args.model)
+            qvec = encode_query_remote(args.query)
             res = coll.query.hybrid(
                 query=args.query,
                 vector=qvec,
