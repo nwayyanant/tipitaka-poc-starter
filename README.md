@@ -49,14 +49,16 @@ Start Git Bash to run following steps
 	curl -s -X POST http://localhost:8090/v1/graphql -H "Content-Type: application/json" -d "{\"query\":\"{ Aggregate { Chunk { meta { count } } } }\"}"
 	```
 	
-## Simple Search TEST
+## Simple Search (TEST)
 	
-	example #1
+	1. **example #1** 
+ 
 	```bash
 	 python /workspace/etl/app/search_weaviate_labse_hybridfix.py --url http://weaviate:8080 --grpc-port 50051 --collection Window --mode hybrid --query mettā --k 5 --alpha 0.5
 	```
 	
-	example #2 using search service - command line
+	2. example #2 using search service - command line
+ 
 	```bash
 	docker compose run --rm search python cli.py --collection Window --mode hybrid --query "mettā" --k 10
 	```
@@ -92,4 +94,5 @@ Start Git Bash to run following steps
 	Prod mode
 
 	./bootstrap.sh up --prod
+
 	→ runs with prod file → optimized containers.
