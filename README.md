@@ -49,7 +49,7 @@ Start Git Bash to run following steps
 	curl -s -X POST http://localhost:8090/v1/graphql -H "Content-Type: application/json" -d "{\"query\":\"{ Aggregate { Chunk { meta { count } } } }\"}"
 	```
 	
-8. **Simple Search ** (Test)
+## Simple Search TEST
 	
 	example #1
 	```bash
@@ -59,6 +59,14 @@ Start Git Bash to run following steps
 	example #2 using search service - command line
 	```bash
 	docker compose run --rm search python cli.py --collection Window --mode hybrid --query "mettā" --k 10
+	```
+	
+	```bash
+	docker compose run --rm search python cli.py --collection Window --mode hybrid --query "puttā" --k 10
+	```
+	
+	```bash
+	docker compose run --rm search python cli.py --collection Window --mode hybrid --query "bhagavā" --k 10
 	```
 	 
  
