@@ -49,9 +49,9 @@ Start Git Bash to run following steps
 	curl -s -X POST http://localhost:8090/v1/graphql -H "Content-Type: application/json" -d "{\"query\":\"{ Aggregate { Chunk { meta { count } } } }\"}"
 	```
 	
-## Simple Search (TEST)
+## Simple Search Examples
 	
-	1. **example #1** 
+	1. example #1 
  
 	
 	 python /workspace/etl/app/search_weaviate_labse_hybridfix.py --url http://weaviate:8080 --grpc-port 50051 --collection Window --mode hybrid --query mettā --k 5 --alpha 0.5
@@ -72,7 +72,40 @@ Start Git Bash to run following steps
 	
 	 
  
+## FAST API Search Service Examples	
+
+	1. **Health check in any browser**
 	
+		call: http://localhost:8002/health
+	
+		Expected: {"status":"ok"}
+		
+	2. **Try a query**	
+		1. call http://localhost:8002/docs
+		
+		2. click 'POST /search'
+		
+		3. click 'Try it out'
+		
+		4. paste json string
+		   ```json
+		   {
+				"collection":"Window",
+				"query":"bhagavā",
+				"mode":"hybrid",
+				"k":5,
+				"alpha":0.5
+		   }
+		   ```
+		
+	⚖️ Role of alpha
+
+		alpha is a weighting factor between the two methods:
+		alpha = 0.0 → pure BM25 (keywords only).
+		alpha = 1.0 → pure vector search (semantic only).
+		alpha = 0.5 → equal weighting (half keyword relevance, half semantic similarity).
+		So with 0.5, both BM25 and embeddings contribute equally to the ranking. If you pick "mode": "bm25" or "mode": "vector", the alpha value is ignored.
+
 
 ##Change Log **20250922**
 	

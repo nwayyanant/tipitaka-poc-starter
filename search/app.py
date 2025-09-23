@@ -1,6 +1,7 @@
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
 import os
+from typing import Literal, List, Optional
 from utils import get_client, encode_query_remote, pick_return_props
 
 # ------------------------------------------------------
@@ -15,14 +16,22 @@ COLLECTION = os.getenv("WEAVIATE_COLLECTION", "Chunk")
 # FastAPI app
 # ------------------------------------------------------
 
-app = FastAPI()
+app = FastAPI(title="Search Service", version="1.0")
 
 # Pydantic request schema
 class SearchRequest(BaseModel):
+    collection: str
     query: str
-    mode: str = "bm25"   # "bm25", "vector", or "hybrid"
+    mode: Literal["bm25", "vector", "hybrid"] = "bm25"
     k: int = 5
-    alpha: float = 0.5   # only for hybrid
+    alpha: float = 0.5 # only for hybrid
+
+# Response schema
+class SearchResult(BaseModel):
+    text: str
+    score: Optional[float] = None
+    metadata: dict
+
 
 @app.get("/health")
 async def health():
@@ -40,11 +49,12 @@ async def health():
 
 
 @app.post("/search")
-async def search(req: SearchRequest):
+async def search(req: SearchRequest)-> List[SearchResult]:
+    results = []
     try:
         client = get_client(WEAVIATE_URL, WEAVIATE_GRPC_PORT)
-        coll = client.collections.get(COLLECTION)
-        props = pick_return_props(COLLECTION)
+        coll = client.collections.get(req.collection)
+        props = pick_return_props(req.collection)
 
         if req.mode == "vector":
             qvec = encode_query_remote(req.query)
@@ -55,11 +65,21 @@ async def search(req: SearchRequest):
         else:
             res = coll.query.bm25(query=req.query, limit=req.k, return_properties=props)
 
-        return res.dict()  # JSON response
+        for o in res.objects or []:
+            p = o.properties or {}
+            score = getattr(o.metadata, "score", None)
+            results.append(SearchResult(
+                text=p.get("text") or p.get("sentence_text") or p.get("subchunk_text") or p.get("chunk_text", ""),
+                score=score,
+                metadata=p,
+            ))
+         
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
     finally:
         client.close()
+    
+    return results
 
 # ✅ Dev mode: can run directly
 if __name__ == "__main__":
